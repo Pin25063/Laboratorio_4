@@ -1,4 +1,4 @@
-public class Imagen extends Contenido {
+public class Imagen extends Contenido implements IDescargable
 
     public Imagen(String nombre, Editor creador, String descripcion) {
         super(nombre, creador, descripcion);
@@ -7,5 +7,10 @@ public class Imagen extends Contenido {
     @Override
     public String visualizar() {
     
+    }
+
+    @Override
+    public String descargar() {
+        
     }
 }
