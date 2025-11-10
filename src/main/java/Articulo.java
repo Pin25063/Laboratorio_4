@@ -6,11 +6,11 @@ public class Articulo extends Contenido implements IDescargable{
 
     @Override
     public String visualizar() {
-        
+        return "Mostrando en pantalla " + nombre + "...";
     }
 
     @Override
     public String descargar() {
-        
+       return "Descargando articulo...";
     }
 }

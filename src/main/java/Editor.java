@@ -6,7 +6,7 @@ public class Editor extends User implements ICrear, IEditar{
 
     @Override
     public String editar(Contenido c) {
-        
+        return "Contenido editado";
     }
 
     @Override
