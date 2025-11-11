@@ -21,10 +21,10 @@ public class Admin extends User implements IEliminar, IPublicar {
 
     @Override
     public String eliminar(Contenido c, ArrayList<Contenido> contenido) {
+
         if (c == null) {
             return "No se ha seleccionado ningún contenido para eliminar.";
         }
-
         if (contenido == null) {
             return "No se pudo acceder a la lista de contenidos";
         }
