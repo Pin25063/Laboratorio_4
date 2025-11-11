@@ -36,8 +36,14 @@ public class VistaLogin extends VBox {
         );
 
         // Asignar acciones a los botones
-        btnAdministrador.setOnAction(e -> { onShowAdmin.run(); });
-        btnEditor.setOnAction(e -> { onShowEditor.run(); });
+        btnAdministrador.setOnAction(e -> { 
+            onShowAdmin.run(); 
+        });
+
+        btnEditor.setOnAction(e -> { 
+
+            onShowEditor.run(); 
+        });
     }
 
     // Setters para las acciones de los botones de navegación
@@ -47,5 +53,14 @@ public class VistaLogin extends VBox {
 
     public void setOnShowEditor(Runnable onShowEditor) {
         this.onShowEditor = onShowEditor;
+    }
+
+    public void manejarLogIn(User usuario){
+        if (usuario instanceof Editor){
+
+        }
+        else{
+            
+        }
     }
 }

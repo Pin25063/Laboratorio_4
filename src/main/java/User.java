@@ -1,18 +1,8 @@
 public abstract class User {
     
-    protected String correo;
-    protected String password;
-
-    public User(String correo, String password) {
-        this.correo = correo;
-        this.password = password;    
+    // Dejamos el constructor vacío
+    public User() {
     }
 
-    public String getCorreo() {
-            return this.correo;
-        }
-    
-    public boolean verificarContraseña(String intento) {
-        return this.password.equals(intento);
-    }
+    // Eliminamos correo, password, getCorreo() y verificarContraseña()
 }
