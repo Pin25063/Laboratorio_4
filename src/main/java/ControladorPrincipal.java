@@ -41,6 +41,7 @@ public class ControladorPrincipal {
         // Conexiones de vistaEditor
         this.vistaEditor.setOnGuardar(this::handleGuardarContenido);
         this.vistaEditor.setOnEditar(this::handleCargarParaEditar);
+        this.vistaEditor.setOnReporte(this::handleGenerarReporte);
 
         // Conexiones de vistaAdmin
         this.vistaAdmin.setOnPublicar(this::handlePublicarContenido);

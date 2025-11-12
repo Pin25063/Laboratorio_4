@@ -20,6 +20,7 @@ public class VistaEditor extends VBox {
     private final Button btnVolver = new Button("Volver al Login");
     private final Button btnEditar = new Button("Cargar para Editar");
     private final Button btnGuardar = new Button("Guardar Contenido"); 
+    private final Button btnReporte = new Button("Generar reporte");
 
     private final HBox sectorBotones = new HBox();
     
@@ -37,6 +38,7 @@ public class VistaEditor extends VBox {
     private Runnable onBack;
     private Runnable onGuardar; 
     private Runnable onEditar; 
+    private Runnable onReporte;
 
     public VistaEditor() {
         setPadding(new Insets(24));
@@ -51,7 +53,7 @@ public class VistaEditor extends VBox {
         // Configurar HBox de Botones
         sectorBotones.setAlignment(Pos.CENTER);
         sectorBotones.setSpacing(10);
-        sectorBotones.getChildren().addAll(btnGuardar, btnEditar); 
+        sectorBotones.getChildren().addAll(btnGuardar, btnEditar, btnReporte); 
 
         // Configurar Formulario
         cmbTipo.getItems().addAll("Articulo", "Imagen", "Video");
@@ -61,14 +63,16 @@ public class VistaEditor extends VBox {
         txtDescripcion.setPromptText("Descripción");
 
         // Configuración de TableView
-        // Crear columna de Nombre
         TableColumn<Contenido, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        // Crear columna de Descripción
+        
         TableColumn<Contenido, String> colDescripcion = new TableColumn<>("Descripción");
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        
+        TableColumn<Contenido, Integer> colVistas = new TableColumn<>("Vistas");
+        colVistas.setCellValueFactory(new PropertyValueFactory<>("vistas"));
         // Añadir las columnas a la tabla
-        tablaContenido.getColumns().addAll(colNombre, colDescripcion);
+        tablaContenido.getColumns().addAll(colNombre, colDescripcion, colVistas);
         // Hacer que las columnas ocupen el espacio disponible
         tablaContenido.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         
@@ -99,6 +103,10 @@ public class VistaEditor extends VBox {
         btnEditar.setOnAction(e -> { 
             if (onEditar != null) onEditar.run(); 
         });
+
+        btnReporte.setOnAction(e -> {
+            if (onReporte != null) onReporte.run();
+        });
     }
     
     // Setters para el Controlador
@@ -113,6 +121,9 @@ public class VistaEditor extends VBox {
     
     public void setOnEditar(Runnable onEditar) {
         this.onEditar = onEditar;
+    }
+    public void setOnReporte(Runnable onReporte){
+        this.onReporte = onReporte;
     }
     
     // Getters para que el Controlador lea los datos
