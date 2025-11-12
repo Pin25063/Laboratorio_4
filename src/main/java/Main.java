@@ -41,18 +41,26 @@ public class Main extends Application {
     public void showLoginView() {
         scene.setRoot(vistaLogin);
         primaryStage.setTitle("CMS Login");
+        primaryStage.sizeToScene();
+
     }
 
     //Muestra la vista de Administrador
     public void showAdminView() {
         scene.setRoot(vistaAdmin);
         primaryStage.setTitle("Vista Administrador");
+        primaryStage.setWidth(600);  // ancho deseado
+        primaryStage.setHeight(400); // alto deseado
+        primaryStage.centerOnScreen();
+
     }
 
     //Muestra la vista de Editor
     public void showEditorView() {
         scene.setRoot(vistaEditor);
         primaryStage.setTitle("Vista Editor");
+        primaryStage.sizeToScene();
+
     }
 
 

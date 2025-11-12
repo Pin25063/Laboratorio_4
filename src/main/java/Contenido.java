@@ -52,4 +52,8 @@ public abstract class Contenido {
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
+
+    public String getEstado() {
+        return visible ? "Publicado" : "Oculto";
+    }
 }
