@@ -6,7 +6,7 @@ public class Imagen extends Contenido implements IDescargable{
 
     @Override
     public String visualizar() {
-        return "Visualizando " + nombre + "...";
+        return "Visualizando la imagen " + nombre + "...";
     }
 
     @Override

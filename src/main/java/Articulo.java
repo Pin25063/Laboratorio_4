@@ -6,7 +6,7 @@ public class Articulo extends Contenido implements IDescargable{
 
     @Override
     public String visualizar() {
-        return "Mostrando en pantalla " + nombre + "...";
+        return "Mostrando en pantalla el articulo " + nombre + "...";
     }
 
     @Override

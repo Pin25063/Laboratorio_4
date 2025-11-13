@@ -1,22 +1,31 @@
 // Jose Pinto
 // Valeria Hernandez
-
 import java.util.ArrayList;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-public class VistaAdmin extends VBox {
 
+public class VistaAdmin extends VBox {
     // Elementos principales
     private final Label lblTitulo = new Label("Panel del Administrador");
     private final ComboBox<String> cbFiltro = new ComboBox<>();
     private final TableView<Contenido> tablaContenidos = new TableView<>();
+    private ArrayList<Contenido> listaOriginal;
+
+    private Runnable onBack;
 
     // Botones
     private final Button btnPublicar = new Button("Publicar");
@@ -39,7 +48,7 @@ public class VistaAdmin extends VBox {
         lblTitulo.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
         // Configuración del filtro
-        cbFiltro.getItems().addAll("Todos", "Video", "Imagen", "Artículo");
+        cbFiltro.getItems().addAll("Todos", "Video", "Imagen", "Articulo");
         cbFiltro.setValue("Todos");
 
         HBox filtroBox = new HBox(10, new Label("Filtrar por tipo:"), cbFiltro);
@@ -49,19 +58,16 @@ public class VistaAdmin extends VBox {
         TableColumn<Contenido, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 
-        TableColumn<Contenido, String> colAutor = new TableColumn<>("Autor");
-        colAutor.setCellValueFactory(new PropertyValueFactory<>("autor"));
-
         TableColumn<Contenido, String> colDescripcion = new TableColumn<>("Descripción");
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
-        TableColumn<Contenido, String> colVisibilidad = new TableColumn<>("Visibilidad");
-        colVisibilidad.setCellValueFactory(new PropertyValueFactory<>("visible"));
-
+        TableColumn<Contenido, String> colVisibilidad = new TableColumn<>("Estado");
+        colVisibilidad.setCellValueFactory(new PropertyValueFactory<>("estado"));
+        
         TableColumn<Contenido, Integer> colVistas = new TableColumn<>("Vistas");
         colVistas.setCellValueFactory(new PropertyValueFactory<>("vistas"));
 
-        tablaContenidos.getColumns().addAll(colNombre, colAutor, colDescripcion, colVisibilidad, colVistas);
+        tablaContenidos.getColumns().addAll(colNombre, colDescripcion, colVisibilidad, colVistas);
         tablaContenidos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         tablaContenidos.setPrefHeight(400);
 
@@ -69,27 +75,41 @@ public class VistaAdmin extends VBox {
         HBox botonesBox = new HBox(15, btnPublicar, btnEliminar, btnReporte, btnCerrarSesion);
         botonesBox.setAlignment(Pos.CENTER);
 
-        // Estilos básicos de botones
-        btnPublicar.setStyle("-fx-background-color: #0e853fff; -fx-text-fill: white; -fx-font-weight: bold;");
-        btnEliminar.setStyle("-fx-background-color: #d12a17ff; -fx-text-fill: white; -fx-font-weight: bold;");
-        btnReporte.setStyle("-fx-background-color: #34495eff; -fx-text-fill: white; -fx-font-weight: bold;");
-        btnCerrarSesion.setStyle("-fx-background-color: #7f8c8dff; -fx-text-fill: white; -fx-font-weight: bold;");
-
         // Listeners de los botones
-        btnPublicar.setOnAction(e -> { if (onPublicar != null) onPublicar.run(); });
-        btnEliminar.setOnAction(e -> { if (onEliminar != null) onEliminar.run(); });
-        btnReporte.setOnAction(e -> { if (onReporte != null) onReporte.run(); });
-        btnCerrarSesion.setOnAction(e -> { if (onCerrarSesion != null) onCerrarSesion.run(); });
-
+        cbFiltro.setOnAction(e -> aplicarFiltro());
+        btnPublicar.setOnAction(e -> { 
+            if (onPublicar != null) onPublicar.run(); 
+        });
+        btnEliminar.setOnAction(e -> { 
+            if (onEliminar != null) onEliminar.run(); 
+        });
+        btnReporte.setOnAction(e -> { 
+            if (onReporte != null) onReporte.run(); 
+        });
+        btnCerrarSesion.setOnAction(e -> { 
+            if (onCerrarSesion != null) onCerrarSesion.run(); 
+        });
         // Estructura general
         getChildren().addAll(lblTitulo, filtroBox, tablaContenidos, botonesBox);
+
+        btnCerrarSesion.setOnAction(e -> { 
+            if (onBack != null) onBack.run(); 
+        });
     }
 
     // --- Setters para asignar acciones ---
-    public void setOnPublicar(Runnable onPublicar) { this.onPublicar = onPublicar; }
-    public void setOnEliminar(Runnable onEliminar) { this.onEliminar = onEliminar; }
-    public void setOnReporte(Runnable onReporte) { this.onReporte = onReporte; }
-    public void setOnCerrarSesion(Runnable onCerrarSesion) { this.onCerrarSesion = onCerrarSesion; }
+    public void setOnPublicar(Runnable onPublicar) {
+        this.onPublicar = onPublicar;
+    }
+    public void setOnEliminar(Runnable onEliminar) { 
+        this.onEliminar = onEliminar; 
+    }
+    public void setOnReporte(Runnable onReporte) { 
+        this.onReporte = onReporte; 
+    }
+    public void setOnCerrarSesion(Runnable onCerrarSesion) { 
+        this.onCerrarSesion = onCerrarSesion; 
+    }
 
     // --- Getters ---
     public Contenido getContenidoSeleccionado() {
@@ -102,7 +122,25 @@ public class VistaAdmin extends VBox {
 
     // --- Actualiza los contenidos mostrados ---
     public void actualizarTabla(ArrayList<Contenido> contenidos) {
-        tablaContenidos.getItems().setAll(contenidos);
+        this.listaOriginal = new ArrayList<>(contenidos); // Guarda la lista completa
+        aplicarFiltro(); // Aplica filtro actual
+    }
+    
+    // --- Método para aplicar filtro ---
+    private void aplicarFiltro() {
+        if (listaOriginal == null) return;
+
+        String filtro = cbFiltro.getValue();
+        ArrayList<Contenido> filtrados = new ArrayList<>();
+
+        for (Contenido c : listaOriginal) {
+            String tipo = c.getClass().getSimpleName();
+            if (filtro.equals("Todos") || tipo.equalsIgnoreCase(filtro)) {
+                filtrados.add(c);
+            }
+        }
+
+        tablaContenidos.getItems().setAll(filtrados);
     }
 
     // --- Muestra una alerta simple ---
@@ -124,6 +162,11 @@ public class VistaAdmin extends VBox {
         ventanaReporte.setTitle("Reporte General del Sistema");
         ventanaReporte.setHeaderText("Resultados del reporte");
         ventanaReporte.getDialogPane().setContent(area);
+        ventanaReporte.getDialogPane().setPrefSize(600, 400); // ancho, alto
         ventanaReporte.showAndWait();
+    }
+
+    public void setOnBack(Runnable onBack) {
+        this.onBack = onBack;
     }
 }

@@ -16,4 +16,44 @@ public abstract class Contenido {
     }
 
     public abstract String visualizar();
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public Editor getCreador() {
+        return creador;
+    }
+
+    public int getVistas() {
+        return vistas;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setCreador(Editor creador) {
+        this.creador = creador;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public String getEstado() {
+        return visible ? "Publicado" : "Oculto";
+    }
 }
