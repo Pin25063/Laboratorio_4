@@ -6,7 +6,7 @@ public class Video extends Contenido implements IDescargable, IReproducible{
 
     @Override
     public String visualizar() {
-        return "Visualizando " + nombre + "...";
+        return "Visualizando el video" + nombre + "...";
     }
 
     @Override

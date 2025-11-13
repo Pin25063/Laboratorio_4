@@ -42,6 +42,8 @@ public class ControladorPrincipal {
         this.vistaEditor.setOnGuardar(this::handleGuardarContenido);
         this.vistaEditor.setOnEditar(this::handleCargarParaEditar);
         this.vistaEditor.setOnReporte(this::handleGenerarReporte);
+        this.vistaEditor.setOnVisualizar(this::handleVisualizar);
+        this.vistaEditor.setOnDescargar(this::handleDescargar);
 
         // Conexiones de vistaAdmin
         this.vistaAdmin.setOnPublicar(this::handlePublicarContenido);
@@ -141,6 +143,26 @@ public class ControladorPrincipal {
             
             // Guardar que estamos editando
             this.contenidoSiendoEditado = seleccionado;
+        }
+    }
+
+    // Visualizar contenido
+    private void handleVisualizar() {
+        Contenido seleccionado = vistaEditor.getContenidoSeleccionado();
+        if (seleccionado != null) {
+            String mensaje = seleccionado.visualizar();
+            vistaEditor.mostrarAlerta(mensaje);
+        }
+    }
+
+    // Descargar contenido
+    private void handleDescargar() {
+        Contenido seleccionado = vistaEditor.getContenidoSeleccionado();
+        if (seleccionado != null) {
+            if (seleccionado instanceof IDescargable) {
+                String mensaje = ((IDescargable) seleccionado).descargar();
+                vistaEditor.mostrarAlerta(mensaje);
+            }
         }
     }
 

@@ -4,15 +4,16 @@ import java.util.ArrayList;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory; // Reemplaza a ListView
-import javafx.scene.layout.HBox; // Para las columnas
-import javafx.scene.layout.VBox; // Para conectar los datos
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 public class VistaEditor extends VBox {
 
@@ -21,8 +22,12 @@ public class VistaEditor extends VBox {
     private final Button btnEditar = new Button("Cargar para Editar");
     private final Button btnGuardar = new Button("Guardar Contenido"); 
     private final Button btnReporte = new Button("Generar reporte");
+    private final Button btnClear = new Button("Limpiar");
+    private final Button btnVisualizar = new Button("Visualizar");
+    private final Button btnDescargar = new Button("Descargar");
 
     private final HBox sectorBotones = new HBox();
+    private final HBox sectorAcciones = new HBox();
     
     // Formulario 
     private final Label lblFormularioTitulo = new Label("Detalles del Contenido");
@@ -30,15 +35,17 @@ public class VistaEditor extends VBox {
     private final TextField txtDescripcion = new TextField();
     private final ComboBox<String> cmbTipo = new ComboBox<>();
     
-    // --- CAMBIO DE LISTVIEW A TABLEVIEW ---
+    // TableView
     private final Label lblListaTitulo = new Label("Contenido Existente");
-    private final TableView<Contenido> tablaContenido = new TableView<>(); // Era: listaContenidoView
+    private final TableView<Contenido> tablaContenido = new TableView<>();
     
     // Callbacks para el Controlador
     private Runnable onBack;
     private Runnable onGuardar; 
     private Runnable onEditar; 
     private Runnable onReporte;
+    private Runnable onVisualizar;
+    private Runnable onDescargar;
 
     public VistaEditor() {
         setPadding(new Insets(24));
@@ -53,7 +60,12 @@ public class VistaEditor extends VBox {
         // Configurar HBox de Botones
         sectorBotones.setAlignment(Pos.CENTER);
         sectorBotones.setSpacing(10);
-        sectorBotones.getChildren().addAll(btnGuardar, btnEditar, btnReporte); 
+        sectorBotones.getChildren().addAll(btnGuardar, btnEditar, btnClear, btnReporte); 
+
+        // Configurar HBox de Acciones
+        sectorAcciones.setAlignment(Pos.CENTER);
+        sectorAcciones.setSpacing(10);
+        sectorAcciones.getChildren().addAll(btnVisualizar, btnDescargar);
 
         // Configurar Formulario
         cmbTipo.getItems().addAll("Articulo", "Imagen", "Video");
@@ -63,6 +75,12 @@ public class VistaEditor extends VBox {
         txtDescripcion.setPromptText("Descripción");
 
         // Configuración de TableView
+        TableColumn<Contenido, String> colTipo = new TableColumn<>("Tipo");
+        colTipo.setCellValueFactory(cellData -> {
+            String tipo = cellData.getValue().getClass().getSimpleName();
+            return new javafx.beans.property.SimpleStringProperty(tipo);
+        });
+
         TableColumn<Contenido, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         
@@ -71,9 +89,8 @@ public class VistaEditor extends VBox {
         
         TableColumn<Contenido, Integer> colVistas = new TableColumn<>("Vistas");
         colVistas.setCellValueFactory(new PropertyValueFactory<>("vistas"));
-        // Añadir las columnas a la tabla
-        tablaContenido.getColumns().addAll(colNombre, colDescripcion, colVistas);
-        // Hacer que las columnas ocupen el espacio disponible
+
+        tablaContenido.getColumns().addAll(colTipo, colNombre, colDescripcion, colVistas);
         tablaContenido.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         
 
@@ -88,6 +105,7 @@ public class VistaEditor extends VBox {
             sectorBotones,
             lblListaTitulo,
             tablaContenido, 
+            sectorAcciones,
             btnVolver
         );
         
@@ -107,6 +125,18 @@ public class VistaEditor extends VBox {
         btnReporte.setOnAction(e -> {
             if (onReporte != null) onReporte.run();
         });
+
+        btnVisualizar.setOnAction(e -> {
+            if (onVisualizar != null) onVisualizar.run();
+        });
+
+        btnDescargar.setOnAction(e -> {
+            if (onDescargar != null) onDescargar.run();
+        });
+
+        btnClear.setOnAction(e -> {
+            limpiarFormulario();
+        });
     }
     
     // Setters para el Controlador
@@ -124,6 +154,14 @@ public class VistaEditor extends VBox {
     }
     public void setOnReporte(Runnable onReporte){
         this.onReporte = onReporte;
+    }
+
+    public void setOnVisualizar(Runnable onVisualizar){
+        this.onVisualizar = onVisualizar;
+    }
+
+    public void setOnDescargar(Runnable onDescargar){
+        this.onDescargar = onDescargar;
     }
     
     // Getters para que el Controlador lea los datos
@@ -151,6 +189,7 @@ public class VistaEditor extends VBox {
         txtDescripcion.clear();
         cmbTipo.setValue("Articulo");
         cmbTipo.setDisable(false); // Habilitar por si estaba deshabilitado
+        tablaContenido.getSelectionModel().clearSelection();
     }
 
     public void cargarDatosFormulario(Contenido c) {
@@ -160,12 +199,20 @@ public class VistaEditor extends VBox {
         if (c instanceof Articulo) cmbTipo.setValue("Articulo");
         else if (c instanceof Imagen) cmbTipo.setValue("Imagen");
         else if (c instanceof Video) cmbTipo.setValue("Video");
-        cmbTipo.setDisable(true); // No se puede cambiar el tipo al editar
+        cmbTipo.setDisable(true);
     }
     
     // Actualizar la Tabla
     public void actualizarLista(ArrayList<Contenido> contenidos) {
         tablaContenido.getItems().clear();
         tablaContenido.getItems().addAll(contenidos);
+    }
+
+    // Mostrar alertas
+    public void mostrarAlerta(String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
     }
 }
