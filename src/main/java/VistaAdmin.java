@@ -25,19 +25,23 @@ public class VistaAdmin extends VBox {
     private final TableView<Contenido> tablaContenidos = new TableView<>();
     private ArrayList<Contenido> listaOriginal;
 
-    private Runnable onBack;
-
     // Botones
     private final Button btnPublicar = new Button("Publicar");
     private final Button btnEliminar = new Button("Eliminar");
     private final Button btnReporte = new Button("Generar Reporte");
-    private final Button btnCerrarSesion = new Button("Cerrar Sesión");
+    private final Button btnCerrarSesion = new Button("Volver al Login");
+    private final Button btnVisualizar = new Button("Visualizar");
+    private final Button btnDescargar = new Button("Descargar");
 
     // Callbacks (para que el controlador asigne la lógica)
     private Runnable onPublicar;
     private Runnable onEliminar;
     private Runnable onReporte;
     private Runnable onCerrarSesion;
+    private Runnable onVisualizar;
+    private Runnable onDescargar;
+    private Runnable onBack;
+
 
     public VistaAdmin() {
         setPadding(new Insets(24));
@@ -71,9 +75,13 @@ public class VistaAdmin extends VBox {
         tablaContenidos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         tablaContenidos.setPrefHeight(400);
 
-        // Botonoes inferiores
-        HBox botonesBox = new HBox(15, btnPublicar, btnEliminar, btnReporte, btnCerrarSesion);
+        // Botonoes superiores
+        HBox botonesBox = new HBox(15, btnPublicar, btnEliminar, btnReporte);
         botonesBox.setAlignment(Pos.CENTER);
+
+        // Configurar HBox de Acciones
+        HBox sectorAcciones = new HBox(15, btnVisualizar, btnDescargar);
+        sectorAcciones.setAlignment(Pos.CENTER);
 
         // Listeners de los botones
         cbFiltro.setOnAction(e -> aplicarFiltro());
@@ -86,18 +94,26 @@ public class VistaAdmin extends VBox {
         btnReporte.setOnAction(e -> { 
             if (onReporte != null) onReporte.run(); 
         });
+        btnVisualizar.setOnAction(e -> {
+            if (onVisualizar != null) onVisualizar.run();
+        });
+
+        btnDescargar.setOnAction(e -> {
+            if (onDescargar != null) onDescargar.run();
+        });
         btnCerrarSesion.setOnAction(e -> { 
             if (onCerrarSesion != null) onCerrarSesion.run(); 
         });
+
         // Estructura general
-        getChildren().addAll(lblTitulo, filtroBox, tablaContenidos, botonesBox);
+        getChildren().addAll(lblTitulo, filtroBox, botonesBox, tablaContenidos, sectorAcciones, btnCerrarSesion);
 
         btnCerrarSesion.setOnAction(e -> { 
             if (onBack != null) onBack.run(); 
         });
     }
 
-    // --- Setters para asignar acciones ---
+    // Setters para acciones
     public void setOnPublicar(Runnable onPublicar) {
         this.onPublicar = onPublicar;
     }
@@ -110,8 +126,17 @@ public class VistaAdmin extends VBox {
     public void setOnCerrarSesion(Runnable onCerrarSesion) { 
         this.onCerrarSesion = onCerrarSesion; 
     }
+    public void setOnVisualizar(Runnable onVisualizar){
+        this.onVisualizar = onVisualizar;
+    }
+    public void setOnDescargar(Runnable onDescargar){
+        this.onDescargar = onDescargar;
+    }
+    public void setOnBack(Runnable onBack) {
+        this.onBack = onBack;
+    }
 
-    // --- Getters ---
+    // Getters
     public Contenido getContenidoSeleccionado() {
         return tablaContenidos.getSelectionModel().getSelectedItem();
     }
@@ -120,13 +145,13 @@ public class VistaAdmin extends VBox {
         return cbFiltro.getValue();
     }
 
-    // --- Actualiza los contenidos mostrados ---
+    // Actualiza los contenidos mostrados en la tabla
     public void actualizarTabla(ArrayList<Contenido> contenidos) {
         this.listaOriginal = new ArrayList<>(contenidos); // Guarda la lista completa
         aplicarFiltro(); // Aplica filtro actual
     }
     
-    // --- Método para aplicar filtro ---
+    //Método para aplicar el filtro
     private void aplicarFiltro() {
         if (listaOriginal == null) return;
 
@@ -143,15 +168,15 @@ public class VistaAdmin extends VBox {
         tablaContenidos.getItems().setAll(filtrados);
     }
 
-    // --- Muestra una alerta simple ---
-    public void mostrarAlerta(String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
+    // Mostrar alertas
+    public void mostrarAlerta(String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
 
-    // --- Mostrar reporte en ventana aparte ---
+    // Mostrar reporte en ventana aparte 
     public void mostrarReporte(String reporte) {
         TextArea area = new TextArea(reporte);
         area.setEditable(false);
@@ -166,7 +191,4 @@ public class VistaAdmin extends VBox {
         ventanaReporte.showAndWait();
     }
 
-    public void setOnBack(Runnable onBack) {
-        this.onBack = onBack;
-    }
 }

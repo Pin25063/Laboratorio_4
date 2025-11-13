@@ -49,9 +49,8 @@ public class Main extends Application {
     public void showAdminView() {
         scene.setRoot(vistaAdmin);
         primaryStage.setTitle("Vista Administrador");
-        primaryStage.setWidth(600);  // ancho deseado
-        primaryStage.setHeight(400); // alto deseado
-        primaryStage.centerOnScreen();
+        primaryStage.sizeToScene();
+
 
     }
 

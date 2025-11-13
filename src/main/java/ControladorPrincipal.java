@@ -2,6 +2,8 @@
 //Valeria Hernandez
 import java.util.ArrayList;
 
+import javafx.scene.control.Alert;
+
 public class ControladorPrincipal {
     
     private User usuarioActual;
@@ -49,6 +51,9 @@ public class ControladorPrincipal {
         this.vistaAdmin.setOnPublicar(this::handlePublicarContenido);
         this.vistaAdmin.setOnEliminar(this::handleEliminarContenido);
         this.vistaAdmin.setOnReporte(this::handleGenerarReporte);
+        this.vistaAdmin.setOnVisualizar(this::handleVisualizarAdmin);
+        this.vistaAdmin.setOnDescargar(this::handleDescargarAdmin);
+
     }
 
     // Logica de Contenido
@@ -170,21 +175,18 @@ public class ControladorPrincipal {
     private void handlePublicarContenido() {
         Contenido seleccionado = vistaAdmin.getContenidoSeleccionado();
         if (seleccionado == null) {
-            vistaAdmin.mostrarAlerta("Selecciona un contenido primero.", javafx.scene.control.Alert.AlertType.WARNING);
+            vistaAdmin.mostrarAlerta("Selecciona un contenido primero.");
             return;
         }
 
         if (seleccionado.isVisible()) {
             vistaAdmin.mostrarAlerta(
-            "El contenido ya está publicado.",
-            javafx.scene.control.Alert.AlertType.INFORMATION);
+            "El contenido ya está publicado");
         } else {
             // Cambiar estado de publicación
             seleccionado.setVisible(!seleccionado.isVisible());
             vistaAdmin.mostrarAlerta(
-                this.administrador.publicar(seleccionado),
-                javafx.scene.control.Alert.AlertType.INFORMATION
-            );
+                this.administrador.publicar(seleccionado));
         }
         
         vistaAdmin.actualizarTabla(listaContenido);
@@ -193,11 +195,11 @@ public class ControladorPrincipal {
     private void handleEliminarContenido() {
         Contenido seleccionado = vistaAdmin.getContenidoSeleccionado();
         if (seleccionado == null) {
-            vistaAdmin.mostrarAlerta("Selecciona un contenido para eliminar.", javafx.scene.control.Alert.AlertType.WARNING);
+            vistaAdmin.mostrarAlerta("Selecciona un contenido para eliminar");
             return;
         }
         listaContenido.remove(seleccionado);
-        vistaAdmin.mostrarAlerta(this.administrador.eliminar(seleccionado), javafx.scene.control.Alert.AlertType.INFORMATION);
+        vistaAdmin.mostrarAlerta(this.administrador.eliminar(seleccionado));
         vistaAdmin.actualizarTabla(listaContenido);
     }
 
@@ -217,23 +219,43 @@ public class ControladorPrincipal {
         }
 
         // Se contruye el reporte
-        StringBuilder sb = new StringBuilder();
-        sb.append("=== REPORTE DEL SISTEMA ===\n\n");
-        sb.append("Total de contenidos: ").append(listaContenido.size()).append("\n");
-        sb.append("Videos: ").append(totalVideos).append("\n");
-        sb.append("Imágenes: ").append(totalImagenes).append("\n");
-        sb.append("Artículos: ").append(totalArticulos).append("\n");
-        sb.append("Vistas Totales: ").append(totalVistas).append("\n\n");
-        sb.append("=== DETALLE DE CONTENIDOS ===\n\n");
+        StringBuilder reporte = new StringBuilder();
+        reporte.append("=== REPORTE DEL SISTEMA ===\n\n");
+        reporte.append("Total de contenidos: ").append(listaContenido.size()).append("\n");
+        reporte.append("Videos: ").append(totalVideos).append("\n");
+        reporte.append("Imágenes: ").append(totalImagenes).append("\n");
+        reporte.append("Artículos: ").append(totalArticulos).append("\n");
+        reporte.append("Vistas Totales: ").append(totalVistas).append("\n\n");
+        reporte.append("=== DETALLE DE CONTENIDOS ===\n\n");
 
         for (Contenido c : listaContenido) {
-            sb.append("[").append(c.getClass().getSimpleName()).append("] ")
+            reporte.append("[").append(c.getClass().getSimpleName()).append("] ")
             .append(c.getNombre()).append("\n")
             .append("Descripción: ").append(c.getDescripcion()).append("\n")
             .append("Estado: ").append(c.isVisible() ? "Publicado" : "Oculto").append("\n")
             .append("Vistas: ").append(c.getVistas()).append("\n\n");
         }
 
-        vistaAdmin.mostrarReporte(sb.toString());
+        vistaAdmin.mostrarReporte(reporte.toString());
+    }
+
+    // Visualizar contenido
+    private void handleVisualizarAdmin() {
+        Contenido seleccionado = vistaAdmin.getContenidoSeleccionado();
+        if (seleccionado != null) {
+            String mensaje = seleccionado.visualizar();
+            vistaAdmin.mostrarAlerta(mensaje);
+        }
+    }
+
+    // Descargar contenido
+    private void handleDescargarAdmin() {
+        Contenido seleccionado = vistaAdmin.getContenidoSeleccionado();
+        if (seleccionado != null) {
+            if (seleccionado instanceof IDescargable) {
+                String mensaje = ((IDescargable) seleccionado).descargar();
+                vistaAdmin.mostrarAlerta(mensaje);
+            }
+        }
     }
 }
